@@ -61,11 +61,37 @@ const demoLangSv: DemoLang = {
 };
 ```
 
+### languageSections to wire it all up
+The [languageSections](src/locaalization/lib/languageSections.ts) file wires it all together by defining the sections and providing helper methods for getting to the data in type-safe ways.
+
+```
+export const LanguageSectionNames = tuple("demo", "admin");
+export type LanguageSectionTuple = typeof LanguageSectionNames;
+export type LanguageSection = LanguageSectionTuple[number];
+
+export interface LanguageSections {
+  readonly demo: DemoLangData;
+  readonly admin: AdminLangData;
+}
+
+const getLanguageSection = <S extends LanguageSection>(
+  section: S
+): LanguageSections[S] => {
+  switch (section) {
+    case "demo":
+      return getDemoLangData();
+    case "admin":
+      return getAdminLangData();
+    default:
+      return assertUnreachable(section);
+  }
+};
+```
 
 ### UseLanguage or getLookupFunction
 Once you have set up the languageSections fixture you can use the UseLanguage react component as shown in the App.tsx file here or just get the lookup function returned from getLookupFunction in your own method and use it like in the getLabelFromMethod example in App.tsx.
 
-This is what it looks like when you use "UseLanguage". You just pass a function that takes a lookup function as argument as its only child and if you want strings from different sections you can just wrap multiple UseLanguage components:
+This is what it looks like when you use "UseLanguage". You just pass a function that takes a lookup function as argument as its only child and if you want strings from different sections you can just wrap multiple UseLanguage components. Both the _t and "lookup" functions below provide a typed interface to the data in the "demo" localization section.
 
 ```
   public render() {
@@ -82,6 +108,13 @@ This is what it looks like when you use "UseLanguage". You just pass a function 
         </UseLanguage>);
   }
 ``` 
+
+```
+const getLabelFromMethod = (language: SupportedUILanguage) => {
+  const lookup = getLookupFunction("demo", language);
+  return lookup("Try switching languages");
+};
+```
 
 ## Scaffolding
 
