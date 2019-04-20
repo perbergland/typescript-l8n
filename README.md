@@ -62,7 +62,7 @@ const demoLangSv: DemoLang = {
 ```
 
 ### languageSections to wire it all up
-The [languageSections](src/locaalization/lib/languageSections.ts) file wires it all together by defining the sections and providing helper methods for getting to the data in type-safe ways.
+The [languageSections](src/localization/lib/languageSections.ts) file wires it all together by defining the sections and providing helper methods for getting to the data in type-safe ways.
 
 ```
 export const LanguageSectionNames = tuple("demo", "admin");
