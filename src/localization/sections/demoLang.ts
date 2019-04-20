@@ -1,13 +1,17 @@
 import { SupportedUILanguage } from "../lib/supported-ui-language";
 
 const demoLangEn = {
-  Language: "",
+  "Language:": "",
+  LongerText:
+    "This is a longer text where I added more words. It could have been in Markdown and then converted to React nodes by some module.",
   "Try switching languages": "",
   "Welcome to the typescript-l8n demo": ""
 };
 
 const demoLangSv: DemoLang = {
-  Language: "Språk",
+  "Language:": "Språk:",
+  LongerText:
+    "Det här är en längre text där jag lade in fler ord. Den kunde också ha varit i Markdown och sedan konverterats till React-noder av en plugin.",
   "Try switching languages": "Prova att byta språk",
   "Welcome to the typescript-l8n demo":
     "Välkommen till demon för typescript-l8n"

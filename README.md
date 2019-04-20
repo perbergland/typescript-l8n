@@ -1,5 +1,5 @@
 # typescript-l8n
-A pattern for handling localized strings in Typescript without adding any dependencies
+A pattern for handling of localized strings in Typescript without adding any dependencies
 
 ## Author
 Per Bergland
@@ -17,13 +17,68 @@ where it makes more sense
 * Typescript compilation will fail if unknown strings are used or if you forget to add translation entries for one or more target languages
 * The translation dictionaries are just javascript objects
 
-This project was initially set up by running
+
+
+## How to setup and use the typescript-l8n pattern
+
+### Localization sections
+Partition your user interface strings into a few names sections (this demo project has two: "admin" and "demo") and wire them together in the languageSections.ts file.
+
+The pattern for a localization section is to use one language as the base and derive the type from the data
+itself. For the base language, you can let the key be the value.
+
+```
+const demoLangEn = {
+  "Language:": "",
+  LongerText:
+    "This is a longer text where I added more words. It could have been in Markdown and then converted to React nodes by some module.",
+  "Try switching languages": "",
+  "Welcome to the typescript-l8n demo": ""
+};
+
+export type DemoLang = { readonly [k in keyof typeof demoLangEn]: string };
+export type DemoLangData = { readonly [k in SupportedUILanguage]: DemoLang };
+```
+
+next you define the other language maps using the derived type so that you get compile errors if the keys are not the same:
+```
+const demoLangSv: DemoLang = {
+  "Language:": "Språk:",
+  LongerText:
+    "Det här är en längre text där jag lade in fler ord. Den kunde också ha varit i Markdown och sedan konverterats till React-noder av en plugin.",
+  "Try switching languages": "Prova att byta språk",
+  "Welcome to the typescript-l8n demo":
+    "Välkommen till demon för typescript-l8n"
+};
+```
+
+
+### UseLanguage or getLookupFunction
+Once you have set up the languageSections fixture you can use the UseLanguage react component as shown in the App.tsx file here or just get the lookup function returned from getLookupFunction in your own method and use it like in the getLabelFromMethod example in App.tsx.
+
+This is what it looks like when you use "UseLanguage". You just pass a function that takes a lookup function as argument as its only child and if you want strings from different sections you can just wrap multiple UseLanguage components:
+
+```
+  public render() {
+    return (
+      <UseLanguage section="demo" language={this.state.language}>
+        {_t => (
+            <div className="App">
+            ...
+              <h1 className="App-title">
+                {_t("Welcome to the typescript-l8n demo")}
+              </h1>
+            ...
+        }
+        </UseLanguage>);
+  }
+``` 
+
+## Scaffolding
+
+This project was initially set up using instructions from https://github.com/Microsoft/TypeScript-React-Starter
 
 ```
 npm install -g create-react-app
 create-react-app typescript-l8n --scripts-version=react-scripts-ts
 ```
-
-## How to use the pattern
-Partition your user interface strings into a few names sections (this demo project has two: "admin" and "demo") and wire them together in the languageSections.ts file.
-Then you can use the UseLanguage react component as shown in the App.tsx file here or just get the lookup function in your own method and use it like in the calledFromMethod example in App.tsx.
