@@ -12,11 +12,20 @@ This repo contains a small React-TS project that showcases a pattern for creatio
 The main advantages of the pattern are
 
 * No added dependencies (except for mustache but you can remove or replace it easily)
-* The text in the base language is viewable where it's used but you can also use text block identifiers
-where it makes more sense
-* Typescript compilation will fail if unknown strings are used or if you forget to add translation entries for one or more target languages
-* The translation dictionaries are just javascript objects
+* The text in the base language is viewable where it's used
+(you can also use text block identifiers where it makes more sense).
 
+![simple use](public/simple-use.png)
+
+* Typescript compilation will fail if unknown strings are used or if you forget to add translation entries for one or more target languages. And you get code completion suggestions in IDE's like VSCode.
+
+![missing key 1](public/missing-key-1.png)
+
+![missing key 2](public/missing-key-2.png)
+
+![code completion](public/completion.png)
+
+* The translation dictionaries are just javascript objects so you can use other tools for managing them if you want
 
 
 ## How to setup and use the typescript-l8n pattern
