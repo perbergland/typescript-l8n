@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { LanguageSection, LanguageSections, getLookupFunction } from '../lib/languageSections';
+import { LanguageSection, LanguageSections, getLookupFunction, ViewData } from '../lib/languageSections';
 import { SupportedUILanguage } from '../lib/supported-ui-language';
 
 export interface UseLanguageProps<
@@ -9,7 +9,7 @@ export interface UseLanguageProps<
   section: S;
   language: L;
   children: (
-    provider: (key: keyof LanguageSections[S][L]) => string
+    provider: (key: keyof LanguageSections[S][L], view?:ViewData) => string
   ) => ReactElement;
 }
 
