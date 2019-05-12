@@ -1,15 +1,14 @@
 import { ReactElement } from "react";
-import { LanguageSection, LanguageSections, getLookupFunction, ViewData } from '../lib/languageSections';
+import { LanguageSection, ViewData, LanguageSectionKeyTypes, getLanguageLookupFunction } from '../lib/languageSections';
 import { SupportedUILanguage } from '../lib/supported-ui-language';
 
 export interface UseLanguageProps<
   S extends LanguageSection,
-  L extends SupportedUILanguage
 > {
   section: S;
-  language: L;
+  language: SupportedUILanguage;
   children: (
-    provider: (key: keyof LanguageSections[S][L], view?:ViewData) => string
+    provider: (key: LanguageSectionKeyTypes[S], view?:ViewData) => string
   ) => ReactElement;
 }
 
@@ -17,13 +16,12 @@ export interface UseLanguageProps<
  * Component to use in a React render block to get access to localized string. 
  */
 export const UseLanguage = <
-  S extends LanguageSection,
-  L extends SupportedUILanguage
+  S extends LanguageSection
 >({
   children,
   section,
   language
-}: UseLanguageProps<S, L>) => {
-  const provider = getLookupFunction(section,language);
+}: UseLanguageProps<S>) => {
+  const provider = getLanguageLookupFunction(section,language);
   return children(provider);
 };
