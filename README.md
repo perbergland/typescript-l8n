@@ -33,31 +33,52 @@ The main advantages of the pattern are
 ### Localization sections
 Partition your user interface strings into a few names sections (this demo project has two: "admin" and "demo") and wire them together in the languageSections.ts file.
 
-The pattern for a localization section is to use one language as the base and derive the type from the data
-itself. For the base language, you can let the key be the value.
+The pattern for a localization section is to use one language as the base and derive the type from the data for another language so that the key for the base language is left in clear text
+unless you want to use it as a key to a longer text snippet.
 
 ```
-const demoLangEn = {
-  "Language:": "",
-  LongerText:
-    "This is a longer text where I added more words. It could have been in Markdown and then converted to React nodes by some module.",
-  "Try switching languages": "",
-  "Welcome to the typescript-l8n demo": ""
-};
-
-export type DemoLang = { readonly [k in keyof typeof demoLangEn]: string };
-export type DemoLangData = { readonly [k in SupportedUILanguage]: DemoLang };
-```
-
-next you define the other language maps using the derived type so that you get compile errors if the keys are not the same:
-```
-const demoLangSv: DemoLang = {
+const demoLangSv = {
   "Language:": "Språk:",
   LongerText:
     "Det här är en längre text där jag lade in fler ord. Den kunde också ha varit i Markdown och sedan konverterats till React-noder av en plugin.",
   "Try switching languages": "Prova att byta språk",
   "Welcome to the typescript-l8n demo":
-    "Välkommen till demon för typescript-l8n"
+    "Välkommen till demon för typescript-l8n",
+  "Text in an inline React component": "Text i en inlinad React-komponent"
+};
+
+export type DemoLangKeys = keyof typeof demoLangSv;
+type DemoLang = { readonly [k in DemoLangKeys]: string };
+
+/**
+ * For the base language we only have to define entries where the key is not the value
+ */
+const demoLangEn: Partial<DemoLang> = {
+  LongerText:
+    "This is a longer text where I added more words. It could have been in Markdown and then converted to React nodes by some module."
+};
+
+export const getDemoLangLookup = (language: SupportedUILanguage) => (
+  key: DemoLangKeys
+): string | undefined => getDemoLangData(language)[key];
+
+const getDemoLangData = (l: SupportedUILanguage): Partial<DemoLang> => {
+  switch (l) {
+    case "sv":
+      return demoLangSv;
+    case "en":
+    default:
+      return demoLangEn;
+  }
+};
+
+```
+if you have more than two languages (not covered in this project) you would then just define more non-partial maps.
+```
+// Norwegian
+const demoLangNb: DemoLang = {
+  "Language:": "Språk:",
+  // ...etc
 };
 ```
 
@@ -69,22 +90,45 @@ export const LanguageSectionNames = tuple("demo", "admin");
 export type LanguageSectionTuple = typeof LanguageSectionNames;
 export type LanguageSection = LanguageSectionTuple[number];
 
-export interface LanguageSections {
-  readonly demo: DemoLangData;
-  readonly admin: AdminLangData;
+export interface LanguageSectionKeyTypes {
+  readonly demo: DemoLangKeys;
+  readonly admin: AdminLangKeys;
 }
 
-const getLanguageSection = <S extends LanguageSection>(
-  section: S
-): LanguageSections[S] => {
-  switch (section) {
-    case "demo":
-      return getDemoLangData();
-    case "admin":
-      return getAdminLangData();
-    default:
-      return assertUnreachable(section);
-  }
+/**
+ * Define a type so we can ensure all values are covered
+ */
+type LookupFunctions = {
+  readonly [k in LanguageSection]: (
+    lang: SupportedUILanguage
+  ) => (key: LanguageSectionKeyTypes[k]) => string | undefined
+};
+
+/**
+ * Use a data structure instead of switch statement so that we can
+ * catch missing entries
+ */
+const lookupFunctions: LookupFunctions = {
+  demo: getDemoLangLookup,
+  admin: getAdminLangLookup
+};
+
+const getLanguageLookup = <S extends LanguageSection>(
+  section: S,
+  language: SupportedUILanguage
+): ((key: LanguageSectionKeyTypes[S]) => string | undefined) => {
+  return lookupFunctions[section](language);
+};
+
+export const getLanguageLookupFunction = <S extends LanguageSection>(
+  section: S,
+  language: SupportedUILanguage
+): ((key: LanguageSectionKeyTypes[S], view?: ViewData) => string) => {
+  const lookup = getLanguageLookup(section, language);
+  return (key: LanguageSectionKeyTypes[S], view?: ViewData) => {
+    const value = lookup(key);
+    return postProcess(key, value, view);
+  };
 };
 ```
 
@@ -111,7 +155,7 @@ This is what it looks like when you use "UseLanguage". You just pass a function 
 
 ```
 const getLabelFromMethod = (language: SupportedUILanguage) => {
-  const lookup = getLookupFunction("demo", language);
+  const lookup = getLanguageLookupFunction("demo", language);
   return lookup("Try switching languages");
 };
 ```

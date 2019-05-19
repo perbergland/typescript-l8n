@@ -1,5 +1,8 @@
 import { SupportedUILanguage } from "../lib/supported-ui-language";
 
+/**
+ * For the base language we only have to define entries where the key is not the value
+ */
 const demoLangEn: Partial<DemoLang> = {
   LongerText:
     "This is a longer text where I added more words. It could have been in Markdown and then converted to React nodes by some module."
