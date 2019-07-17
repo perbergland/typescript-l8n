@@ -22,61 +22,51 @@ const FunctionWrapper = ({
   return children();
 };
 
-interface AppState {
-  language: SupportedUILanguage;
-}
-class App extends React.Component<{}, AppState> {
-  state: AppState = {
-    language: "en"
+const App = () => {
+  const [language, setLanguage] = React.useState<SupportedUILanguage>("en");
+
+  const handleLanguageChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const language = event.target.value as SupportedUILanguage;
+    setLanguage(language);
   };
 
-  handleLanguageChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    const language = event.target.value as SupportedUILanguage;
-    this.setState({ language });
-  }
-
-  public render() {
-    return (
-      <UseLanguage section="demo" language={this.state.language}>
-        {_t => (
-          <div className="App">
-            <header className="App-header">
-              <img src={logo} className="App-logo" alt="logo" />
-              <h1 className="App-title">
-                {_t("Welcome to the typescript-l8n demo")}
-              </h1>
-            </header>
-            <FunctionWrapper>
-              {() => {
-                const t = getLanguageLookupFunction(
-                  "demo",
-                  this.state.language
-                );
-                return <div>{t("Text in an inline React component")}</div>;
-              }}
-            </FunctionWrapper>
-            <p className="App-intro">
-              {getLabelFromMethod(this.state.language)}
-            </p>
-            <hr />
-            <div>
-              <label>
-                {_t("Language:")}
-                <select
-                  value={this.state.language}
-                  onChange={event => this.handleLanguageChange(event)}
-                >
-                  <option value="en">English</option>
-                  <option value="sv">Swedish</option>
-                </select>
-              </label>
-            </div>
-            <p>{_t("LongerText")}</p>
+  return (
+    <UseLanguage section="demo" language={language}>
+      {_t => (
+        <div className="App">
+          <header className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h1 className="App-title">
+              {_t("Welcome to the typescript-l8n demo")}
+            </h1>
+          </header>
+          <FunctionWrapper>
+            {() => {
+              const t = getLanguageLookupFunction("demo", language);
+              return <div>{t("Text in an inline React component")}</div>;
+            }}
+          </FunctionWrapper>
+          <p className="App-intro">{getLabelFromMethod(language)}</p>
+          <hr />
+          <div>
+            <label>
+              {_t("Language:")}
+              <select
+                value={language}
+                onChange={event => handleLanguageChange(event)}
+              >
+                <option value="en">English</option>
+                <option value="sv">Swedish</option>
+              </select>
+            </label>
           </div>
-        )}
-      </UseLanguage>
-    );
-  }
-}
+          <p>{_t("LongerText")}</p>
+        </div>
+      )}
+    </UseLanguage>
+  );
+};
 
 export default App;
