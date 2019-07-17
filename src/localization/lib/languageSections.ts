@@ -44,7 +44,7 @@ const getLanguageLookup = <S extends LanguageSection>(
   section: S,
   language: SupportedUILanguage
 ): ((key: LanguageSectionKeyTypes[S]) => string | undefined) => {
-  return lookupFunctions[section](language);
+  return lookupFunctions[section](language) as any; // How make type safe with TS 3.5?
 };
 
 export const getLanguageLookupFunction = <S extends LanguageSection>(
