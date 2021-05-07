@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "handlebars": "4.5.3",
+    "handlebars": "4.7.7",
     "js-yaml": "3.13.1",
     "mustache": "^3.1.0",
     "react": "^16.12.0",
