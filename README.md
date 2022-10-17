@@ -36,7 +36,7 @@ Partition your user interface strings into a few names sections (this demo proje
 The pattern for a localization section is to use one language as the base and derive the type from the data for another language so that the key for the base language is left in clear text
 unless you want to use it as a key to a longer text snippet.
 
-```
+```typescript
 const demoLangSv = {
   "Language:": "Språk:",
   LongerText:
@@ -74,7 +74,7 @@ const getDemoLangData = (l: SupportedUILanguage): Partial<DemoLang> => {
 
 ```
 if you have more than two languages (not covered in this project) you would then just define more non-partial maps.
-```
+```typescript
 // Norwegian
 const demoLangNb: DemoLang = {
   "Language:": "Språk:",
@@ -85,7 +85,7 @@ const demoLangNb: DemoLang = {
 ### languageSections to wire it all up
 The [languageSections](src/localization/lib/languageSections.ts) file wires it all together by defining the sections and providing helper methods for getting to the data in type-safe ways.
 
-```
+```typescript
 export const LanguageSectionNames = tuple("demo", "admin");
 export type LanguageSectionTuple = typeof LanguageSectionNames;
 export type LanguageSection = LanguageSectionTuple[number];
@@ -137,7 +137,7 @@ Once you have set up the languageSections fixture you can use the UseLanguage re
 
 This is what it looks like when you use "UseLanguage". You just pass a function that takes a lookup function as argument as its only child and if you want strings from different sections you can just wrap multiple UseLanguage components. Both the _t and "lookup" functions below provide a typed interface to the data in the "demo" localization section.
 
-```
+```typescript
   public render() {
     return (
       <UseLanguage section="demo" language={this.state.language}>
@@ -151,9 +151,9 @@ This is what it looks like when you use "UseLanguage". You just pass a function 
         }
         </UseLanguage>);
   }
-``` 
-
 ```
+
+```typescript
 const getLabelFromMethod = (language: SupportedUILanguage) => {
   const lookup = getLanguageLookupFunction("demo", language);
   return lookup("Try switching languages");
